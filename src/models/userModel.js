@@ -3,7 +3,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const userModel = new mongoose.Schema(
   {
-    title: { type: String, required: true, enum: [Mr, Mrs, Miss] },
+    title: { type: String, required: true, enum: ["Mr", "Mrs", "Miss"] },
     name: { type: String, required: "Name is Required" },
     phone: { type: String, required: "Phone number is required", unique: true },
     email: {
