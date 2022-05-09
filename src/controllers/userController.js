@@ -1,4 +1,4 @@
-const userModel = require("../models/collegeModel");
+const userModel = require("../models/userModel");
 const jwt=require("jsonwebtoken")
 
 
@@ -24,6 +24,8 @@ const createUser = async function (req, res) {
     try {
         let requestBody = req.body;
         const {title, name, phone, email, password,address} = requestBody
+        console.log(email);
+        
         if (!isValidRequestBody(requestBody)) {
           res.status(400).send({status: false , msg: 'Please provide details of the intern'}) 
         }
@@ -33,23 +35,23 @@ const createUser = async function (req, res) {
         if (!isValid(name)) {
           res.status(400).send({status: false , msg : 'Enter appropriate mobile number  ' })
         }
-        if (!isValid(email)) {
-          res.status(400).send({status: false , msg : 'Enter appropriate email Id' })
-        }
+        console.log(email);
+        
+      
         if(!( /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
           res.status(400).send({status: false , msg: 'Please enter valid email Id'})
         }
         if (!(phone.length == 10)) {
           res.status(400).send({status: false, msg: 'Enter 10 digit mobile no.'})
         }
-        if (!isValid(address)) {
-            res.status(400).send({status: false , msg : 'Enter appropriate email Id' })
-        }
+        // if (!isValid(address)) {
+        //     res.status(400).send({status: false , msg : 'Enter appropriate address' })
+        // }
         if (!isValid(password)) {
-            res.status(400).send({status: false , msg : 'Enter appropriate email Id' })
+            res.status(400).send({status: false , msg : 'Enter appropriate password' })
         }
         
-        const isEmailAlreadyUsed = await internModel.findOne({email})  
+        const isEmailAlreadyUsed = await userModel.findOne({email})  
         if (isEmailAlreadyUsed) {
           res.status(400).send({status: false, msg: 'Email Address already registered'})
         }
@@ -66,7 +68,7 @@ const createUser = async function (req, res) {
 const userLogin= async function(req,res){
     try{
         let userDetails=req.body
-        let user=await usermodel.findOne(userDetails)
+        let user=await userModel.findOne(userDetails)
         if(!user)
         return res.status(404).send({status:false,msg:"Invalid email or Password"})
 
