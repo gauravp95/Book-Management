@@ -30,4 +30,4 @@ const userModel = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Intern", internModel);
+module.exports = mongoose.model("User", userModel);
