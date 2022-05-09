@@ -1,7 +1,8 @@
 const userModel = require("../models/collegeModel");
+const jwt=require("jsonwebtoken")
 
 
-
+//---------------------------------------Validadtor------------------------------------------
 const isValid = function (value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value != "string" || value.trim().length == 0) return false
@@ -16,8 +17,10 @@ const isValidObjectId = function(objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 }
 
+//-----------------------------------Validator----------------------------------------------------
 
-const createIntern = async function (req, res) {
+
+const createUser = async function (req, res) {
     try {
         let requestBody = req.body;
         const {name, email, mobile, collegeName} = requestBody
@@ -58,3 +61,28 @@ const createIntern = async function (req, res) {
     } catch (error) {
         
     }
+
+
+const userLogin= async function(req,res){
+    try{
+        let userDetails=req.body
+        let user=await usermodel.findOne(userDetails)
+        if(!user)
+        return res.status(404).send({status:false,msg:"Invalid email or Password"})
+
+        let token=jwt.sign({
+            email:user.email
+
+        },
+           "Project2"
+        )
+
+        res.status(200).send({status:true,msg:token})
+    }
+    catch(error){
+        res.status(500).send({status:false,msg:error.message})
+    }
+}
+
+
+
