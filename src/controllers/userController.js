@@ -23,21 +23,14 @@ const isValidObjectId = function(objectId) {
 const createUser = async function (req, res) {
     try {
         let requestBody = req.body;
-        const {name, email, mobile, collegeName} = requestBody
+        const {title, name, phone, email, password,address} = requestBody
         if (!isValidRequestBody(requestBody)) {
           res.status(400).send({status: false , msg: 'Please provide details of the intern'}) 
         }
-        const data = await collegeModel.findOne({ name: collegeName }).select({ _id: 1 })
-        if (!data)
-            res.status(400).send({ status: false, msg: "invalid college name" })
-        const collegeId = data._id;
-        if (!isValidObjectId(collegeId)) {
-          return res.status(400).send({ status: false, msg: "Invalid Object-Id" });
-        }
-        if (!isValid(name)) {
+        if (!isValid(title)) {
           res.status(400).send({status: false , msg : 'Enter appropriate name' })
         }
-        if (!isValid(mobile)) {
+        if (!isValid(name)) {
           res.status(400).send({status: false , msg : 'Enter appropriate mobile number  ' })
         }
         if (!isValid(email)) {
@@ -46,8 +39,14 @@ const createUser = async function (req, res) {
         if(!( /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
           res.status(400).send({status: false , msg: 'Please enter valid email Id'})
         }
-        if (!(mobile.length == 10)) {
+        if (!(phone.length == 10)) {
           res.status(400).send({status: false, msg: 'Enter 10 digit mobile no.'})
+        }
+        if (!isValid(address)) {
+            res.status(400).send({status: false , msg : 'Enter appropriate email Id' })
+        }
+        if (!isValid(password)) {
+            res.status(400).send({status: false , msg : 'Enter appropriate email Id' })
         }
         
         const isEmailAlreadyUsed = await internModel.findOne({email})  
@@ -55,12 +54,13 @@ const createUser = async function (req, res) {
           res.status(400).send({status: false, msg: 'Email Address already registered'})
         }
   
-        const internData = {name, email, mobile, collegeId}
-        const newIntern = await internModel.create(internData);
-        return res.status(201).send({ status: true, data: newIntern });
+        const userData = {title, name, phone, email, password,address}
+        const newUser = await userModel.create(userData);
+        return res.status(201).send({ status: true, data: newUser });
     } catch (error) {
-        
+        return res.status(500).send({status:false ,msg: error.message})
     }
+}
 
 
 const userLogin= async function(req,res){
@@ -99,8 +99,5 @@ const createBook=async function(req,res){
         res.status(500).send({ status: false, msg: error.message })
     }
 }
-
-
-
-module.exports={userLogin,createUser,createBook}
-
+ 
+module.exports={createBook,createUser}
