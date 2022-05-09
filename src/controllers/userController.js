@@ -74,7 +74,7 @@ const userLogin= async function(req,res){
             email:user.email
 
         },
-           "Project2"
+           "Project3"
         )
 
         res.status(200).send({status:true,msg:token})
@@ -85,4 +85,7 @@ const userLogin= async function(req,res){
 }
 
 
+
+
+module.exports = {userLogin }
 
