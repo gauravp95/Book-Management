@@ -8,7 +8,7 @@ const middlewareAuthentication = async function (req, res, next) {
         if (!token) {            
             res.status(400).send({ status: false, msg: "Token Absent in header" })} 
         
-        const decodedToken = jwt.verify(token, 'project3')
+        const decodedToken = jwt.verify(token, "Project3")
         
         if (!decodedToken) {          
             res.status(400).send({ status: false, msg: "user not found" })} 
