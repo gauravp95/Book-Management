@@ -142,4 +142,24 @@ const updateBook = async function(req,res){
         }
 };
 
-module.exports = { createBook,getBooks, getBooksBYId, updateBook };
+//--------------------------------------DELETE API {delte books by bookId}-------------------------------//
+
+const deleteBook = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        let findData = await bookModel.findById(bookId)
+  
+        if (!findData)
+            return res.status(404).send({ status: false, message: "no such book exists" })
+        if (findData.isDeleted == true)
+            return res.status(400).send({ status: false, msg: "Book is already deleted" })
+        let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true, upsert: true })
+        res.status(200).send({ status: true, msg: deletedata })
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+    }
+};
+
+
+module.exports = { createBook,getBooks, getBooksBYId, updateBook, deleteBook };
