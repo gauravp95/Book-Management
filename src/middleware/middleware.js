@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-const middlewareAuthentication = async function (req, res, next) {
-    
+const authentication = async function (req, res, next) {
     try {         
         const token = req.headers['x-auth-token']
 
@@ -21,4 +20,5 @@ const middlewareAuthentication = async function (req, res, next) {
         
         res.status(400).send({ status: false, msg: error })}    
 }
-module.exports.middlewareAuthentication = middlewareAuthentication;
+
+module.exports = {authentication}
