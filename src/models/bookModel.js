@@ -14,7 +14,7 @@ const bookSchema = new mongoose.Schema({
 
   category:{type: String, required: true, trim: true},
   
-  subcategory:{type: String, required: true, trim: true},
+  subcategory:[{type: String, required: true, trim: true}],
 
   reviews:{type: Number,default: 0, comment:" Holds number of reviews of this book"},
 
@@ -22,7 +22,7 @@ const bookSchema = new mongoose.Schema({
 
   isDeleted:{type: Boolean, default: false},
 
-  releasedAt:{type: Date, required: true}
+  releasedAt:{type: Date, required: true, }
   
 },{ timestamps: true } );
 
