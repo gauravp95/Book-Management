@@ -78,7 +78,7 @@ const getBooks = async function (req, res){
   
       if (isValid(req.query.subcategory)){checkObject.subcategory =req.query.subcategory}     
      
-      let search = await bookModel.find(checkObject).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({title:1});
+      let search = await bookModel.find(checkObject).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 ,subcategory:1}).sort({title:1});
   
   
       if (search.length == 0){
@@ -117,7 +117,7 @@ const getBooksBYId = async function (req, res) {
 
 //------------------------------------------------PUT API {update books details}------------------------------------------------------------------//
 
-const updateuser=async function(req,res){
+const updateBook = async function(req,res){
     try{
          let Id=req.params.userId
          let bodyData=req.body
@@ -139,4 +139,4 @@ const updateuser=async function(req,res){
     }
 }
 
-  module.exports = { createBook,getBooks, getBooksBYId, updateuser };
+  module.exports = { createBook,getBooks, getBooksBYId, updateBook };
