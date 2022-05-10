@@ -117,29 +117,78 @@ const getBooksBYId = async function (req, res) {
 
 //------------------------------------------------PUT API {update books details}------------------------------------------------------------------//
 
-const updateBook = async function(req,res){
-    try{
-         let Id=req.params.bookId
-         let book=req.body
-         let bookId=await bookModel.findById(Id)
-         
-        if (!bookId)
-        return res.status(404).send({ status: false, msg: "book not present" })
-        if (bookId.isDeleted)
-        return res.status(404).send({ status: false, msg: "book is Deleted" })
+const updateBook = async function (req, res) {
+  try {
+    let requestBody = req.body;
+    
+    if (!isValidRequestBody(requestBody)) {
+      res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide  details to update' })
+      return}
+    let bookId = req.params.bookId;
+
+    if(!isValidObjectId(bookId)) {      
+      res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
+      return}
+
+    let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false })
+
+    if(!bookIdCheck){    
+      return res.status(404).send({status:false,message:'book not found'}) }
+
+    // if(!(req.validToken._id == bookIdCheck.userId)){
+    //   return res.status(400).send({status:false,message:'unauthorized access'})}
+
+    if (!bookIdCheck) {
+      return res.status(404).send({ status: false, msg: 'not valid book input correct book id' }) }
+
+    let uniqueCheck = await bookModel.find({$or: [{ title: requestBody.title }, { ISBN: requestBody.ISBN }]} )
+    
+    if (uniqueCheck.length > 0) {  
+      return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
+
+    let updateObject ={}
+
+    if (isValid(requestBody.title)) {
+      updateObject.title = requestBody.title}
+
+    if (isValid(requestBody.excerpt)) {
+      updateObject.excerpt = requestBody.excerpt}
+      
+    if (isValid(requestBody.releasedAt)) {
+      updateObject.releasedAt = requestBody.releasedAt}
+
+    if (isValid(requestBody.ISBN)) {
+      updateObject.ISBN = requestBody.ISBN}
+    
+    let update = await bookModel.findOneAndUpdate({ _id: bookId },updateObject , { new: true })
+
+    res.status(200).send({ status: true, message: 'sucessfully updated', data: update })
+
+  } catch (error) {
+    res.status(500).send({ status: false, error: error.message });
+  }
+}
+
+//--------------------------------------DELETE API {delte books by bookId}-------------------------------//
+
+const deleteBook = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        let findData = await bookModel.findById(bookId)
   
-        let getData = await bookModel.findByIdAndUpdate(
-        { _id: Id },
-        {$addToSet: { subcategory: book.subcategory }}, 
-        {$set: {title:book.title, excerpt:book.excerpt,releasedAt:Date.now(),ISBN:book.ISBN }},
-        { new: true }
-        )
-  
-        res.status(200).send({ status: true, msg: getData })
-        }
-        catch(error){
-          res.status(500).send({status:false,msg:error.message})
-        }
+        if (!findData)
+            return res.status(404).send({ status: false, message: "no such book exists" })
+        if (findData.isDeleted == true)
+            return res.status(400).send({ status: false, msg: "Book is already deleted" })
+        let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true, upsert: true })
+        res.status(200).send({ status: true, msg: deletedata })
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+    }
 };
 
-module.exports = { createBook,getBooks, getBooksBYId, updateBook };
+
+
+
+module.exports = { createBook,getBooks, getBooksBYId, updateBook, deleteBook };
