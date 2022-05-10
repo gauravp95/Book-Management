@@ -3,11 +3,12 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const userModel = new mongoose.Schema(
   {
-    title: { type: String, required: true, enum: ["Mr", "Mrs", "Miss"] },
-    name: { type: String, required: "Name is Required" },
-    phone: { type: String, required: "Phone number is required", unique: true },
+    title: { type: String, required: true, enum: ["Mr", "Mrs", "Miss"]},
+    name: { type: String, required: "Name is Required" ,trim: true},
+    phone: { type: String, required: "Phone number is required", unique: true, trim: true },
     email: {
       type: String,
+      trim: true,
       required: "Email is required",
       validate: {
         validator: function (email) {
@@ -17,7 +18,7 @@ const userModel = new mongoose.Schema(
         isAsync: false,
       },
     },
-    password: { type: String, required: true, min: 8, max: 15 },
+    password: { type: String, required: true, min: 8, max: 15},
     address: {
       street: { type: String },
       city: { type: String },
@@ -29,3 +30,4 @@ const userModel = new mongoose.Schema(
 
 module.exports = mongoose.model("User", userModel);
 
+        
