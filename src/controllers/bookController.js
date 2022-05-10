@@ -105,7 +105,7 @@ const getBooksBYId = async function (req, res) {
       if(!bookDetail){
         return res.status(404).send({status:false, message:"book not found"})}
   
-      const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
+      const reviewsData = await bookModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
     
       res.status(200).send({ status: true, data: {...bookDetail.toObject(),reviewsData}});
   
@@ -119,24 +119,27 @@ const getBooksBYId = async function (req, res) {
 
 const updateBook = async function(req,res){
     try{
-         let Id=req.params.userId
-         let bodyData=req.body
-         let updateQuery={title:bodyData.title, excerpt:bodyData.excerpt, release:new Date(),ISBN:bodyData.ISBN}
-         let bookId=await blogModel.findById(Id)
-        
+         let Id=req.params.bookId
+         let book=req.body
+         let bookId=await bookModel.findById(Id)
          
         if (!bookId)
         return res.status(404).send({ status: false, msg: "book not present" })
-    if (blogId.isDeleted)
+        if (bookId.isDeleted)
         return res.status(404).send({ status: false, msg: "book is Deleted" })
   
-    let getData = await blogModel.findOneAndUpdate({ _id: Id }, { $set: updateQuery, $push: addQuery }, { new: true, upsert: true })
+        let getData = await bookModel.findByIdAndUpdate(
+        { _id: Id },
+        {$addToSet: { subcategory: book.subcategory }}, 
+        {$set: {title:book.title, excerpt:book.excerpt,releasedAt:Date.now(),ISBN:book.ISBN }},
+        { new: true }
+        )
   
-    res.status(200).send({ status: true, msg: getData })
-    }
-    catch(error){
-      res.status(500).send({status:false,msg:error.message})
-    }
-}
+        res.status(200).send({ status: true, msg: getData })
+        }
+        catch(error){
+          res.status(500).send({status:false,msg:error.message})
+        }
+};
 
-  module.exports = { createBook,getBooks, getBooksBYId, updateBook };
+module.exports = { createBook,getBooks, getBooksBYId, updateBook };
