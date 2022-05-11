@@ -45,7 +45,7 @@ const createReview = async function (req, res) {
       res.status(400).send({ status: false, message: ' Rate 1 to 5 Only' })
       return}
 
-     let bookDetail = await bookModel.findOneAndUpdate({ _id: req.params.bookId }, { reviews: checkBookId.reviews + 1 }, { new: true })
+     //let bookDetail = await bookModel.findOneAndUpdate({ _id: req.params.bookId }, { reviews: checkBookId.reviews + 1 }, { new: true })
 
     requestBody.reviewedAt = new Date()
     requestBody.bookId = req.params.bookId
@@ -60,7 +60,7 @@ const createReview = async function (req, res) {
      reviewedAt: create.reviewedAt, 
      rating: create.rating, 
      review: create.review}
-    res.status(201).send({ status: true, message: 'review created sucessfully', data:{...bookDetail.toObject(),review:data} })
+    res.status(201).send({ status: true, message: 'review created sucessfully', data:data })
 
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
@@ -68,57 +68,55 @@ const createReview = async function (req, res) {
 }
 
 //---------------------------------------Put Api Update Rewiew----------------------//
+
 const updatereview = async function (req, res) {
   try {
-    let requestBody = req.body;
-    
-    if (!isValidRequestBody(requestBody)) {
-      res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide  details to update' })
-      return}
-    let bookId = req.params.bookId;
+    let bookId = req.params.bookId
+    let reviewId = req.params.reviewId
+    let requestBody = req.body
 
-    if(!isValidObjectId(bookId)) {      
+    if (!isValidRequestBody(requestBody)){
+      res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide review details' })
+      return}
+
+    if(!isValidObjectId(bookId)){ 
       res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
       return}
 
-    let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false })
+  if(!isValidObjectId(reviewId)){
+    res.status(400).send({status: false, message: `${reviewId} is not a valid review id`})
+    return}
 
-    if(!bookIdCheck){    
-      return res.status(404).send({status:false,message:'book not found'}) }
+    let checkreviewId = await reviewModel.findOne({ _id: reviewId,bookId:bookId, isDeleted: false })
+    if (!checkreviewId) {
+      return res.status(404).send({ status: false, message: 'review with this bookid does not exist' })}
 
-    // if(!(req.validToken._id == bookIdCheck.userId)){
-    //   return res.status(400).send({status:false,message:'unauthorized access'})}
+    let checkBookId = await bookModel.findOne({ _id: bookId, isDeleted: false })
+    if (!checkBookId) {
+      return res.status(404).send({ status: false, message: 'book does not exist in book model' })}    
 
-    if (!bookIdCheck) {
-      return res.status(404).send({ status: false, msg: 'not valid book input correct book id' }) }
+    let updateData = {}
 
-    let uniqueCheck = await reviewModel.find({$or: [{  review: requestBody. review }, {  rating: requestBody. value},{  reviewedBy: requestBody.reviewedBy}]} )
+    if (isValid(requestBody.review)){
+      updateData.review = requestBody.review}
+
+    if (isValid(requestBody.reviewedBy)){
+      updateData.reviewedBy = requestBody.reviewedBy}
     
-    if (uniqueCheck.length > 0) {  
-      return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
-
-    let updateObject ={}
-
-    if (isValid(requestBody. review)) {
-      updateObject.title = requestBody. review}
-
-    if (isValid(requestBody.rating)) {
-      updateObject.rating = requestBody.rating}
-      
-   // if (isValid(requestBody.releasedAt)) {
-     // updateObject.releasedAt = requestBody.releasedAt}
-
-    if (isValid(requestBody.reviewedBy)) {
-      updateObject.value = requestBody.reviewedBy}
+    if (requestBody.rating && typeof requestBody.rating === 'number' && requestBody.rating >= 1 && requestBody.rating <= 5) {
+      updateData.rating = requestBody.rating}
     
-    let update = await bookModel.findOneAndUpdate({ _id: bookId },updateObject , { new: true })
+    if(!(requestBody.rating >= 1 && requestBody.rating <= 5)){
+      return res.status(400).send({status:false, message: "rating should be in range 1 to 5 "})}
+    
+    const update = await reviewModel.findOneAndUpdate({ _id: reviewId }, updateData, { new: true })
+    res.status(200).send({ status: true, message: 'review updated sucessfully', data: update })
 
-    res.status(200).send({ status: true, message: 'sucessfully updated', data: update })
+  } catch (error){
+    res.status(500).send({ status: false, error: error.message });
+  }
+}
 
-  } catch (error) {
-    res.status(500).send({ status: false, error: error.message });
-    }
-  }
 //---------------------------------Delete Api----------------------------//
 const deleteReview = async function (req,res) {
   try {

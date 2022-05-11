@@ -1,7 +1,7 @@
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
-//---------------------------------------Validadtor------------------------------------------
+//---------------------------------------Validadtor-----------------------------------------------//
 const isValid = function (value) {
   if (typeof value === "undefined" || value === null) return false;
   if (typeof value != "string" || value.trim().length == 0) return false;
@@ -20,12 +20,12 @@ const isValidObjectId = function (objectId) {
   return mongoose.Types.ObjectId.isValid(objectId);
 };
 
-//-----------------------------------Validator----------------------------------------------------
+//-----------------------------------Post Api {Create User}r----------------------------------------------------//
 
 const createUser = async function (req, res) {
   try {
     let requestBody = req.body;
-    const { title, name, phone, email, password, address } = requestBody;
+    const { title, name, phone, email, password, address } = requestBody;  ///User Id And Book id
 
     if (!isValidRequestBody(requestBody)) {
       res.status(400).send({ status: false, msg: "Please provide details of the User" });

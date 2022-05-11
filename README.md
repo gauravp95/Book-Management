@@ -163,7 +163,7 @@ Refer below sample
 }
 ```
 
-## Collections
+## Collections               //Done--------------------------------------------
 ## users
 ```yaml
 {
@@ -182,7 +182,7 @@ Refer below sample
   "updatedAt": "2021-09-17T04:25:07.803Z",
 }
 ```
-### books
+### books                      //Done--------------------------------------------
 ```yaml
 {
   "_id": ObjectId("88abc190ef0288abc190ef55"),
@@ -201,7 +201,7 @@ Refer below sample
 }
 ```
 
-### reviews
+### reviews                        //Done--------------------------------------------
 ```yaml
 {
   "_id": ObjectId("88abc190ef0288abc190ef88"),
@@ -217,7 +217,7 @@ Refer below sample
 ### Get books response
 ```yaml
 {
-  status: true,
+  status: true,                      //Done--------------------------------------------
   message: 'Books list',
   data: [
     {
@@ -242,7 +242,7 @@ Refer below sample
 }
 ```
 
-### Book details response
+### Book details response                 //Done--------------------------------------
 ```yaml
 {
   status: true,
@@ -298,7 +298,7 @@ Refer below sample
 }
 ```
 
-### Book details response no reviews
+### Book details response no reviews                   //Done-----------------------------------
 ```yaml
 {
   status: true,
@@ -309,7 +309,7 @@ Refer below sample
     "excerpt": "book body",
     "userId": ObjectId("88abc190ef0288abc190ef02")
     "category": "Book",
-    "subcategory": "Non fiction", "Self Help"],
+    "subcategory": ["Non fiction", "Self Help"],
     "deleted": false,
     "reviews": 0,
     "deletedAt": "", // if deleted is true deletedAt will have a date 2021-09-17T04:25:07.803Z,

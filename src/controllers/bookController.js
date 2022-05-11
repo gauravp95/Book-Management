@@ -1,4 +1,5 @@
 const bookModel = require("../models/bookModel.js");
+const reviewModel = require("../models/reviewModel")
 const jwt = require("jsonwebtoken");
 const  mongoose = require("mongoose");
 const moment = require('moment')
@@ -13,10 +14,6 @@ const isValid = function (value) {
 const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
-  
-// const isValidObject = function (object) {
-//    return Object.keys(object).length == 3;
-// };
   
 const isValidObjectId = function (objectId) {
    return mongoose.Types.ObjectId.isValid(objectId);
@@ -106,7 +103,7 @@ const getBooksBYId = async function (req, res) {
       if(!bookDetail){
         return res.status(404).send({status:false, message:"book not found"})}
   
-      const reviewsData = await bookModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
+      const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
     
       res.status(200).send({ status: true, data: {...bookDetail.toObject(),reviewsData}});
   
