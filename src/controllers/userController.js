@@ -85,23 +85,6 @@ const createUser = async function (req, res) {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-const createBook=async function(req,res){
-    try{
-        let data=req.body
-        let userData=await userModel.findById(data.userid)
-        if(!userData)
-          return res.status(400).send({status:false,msg:"Enter Valid user ID"})
-          const createdBook = await blogModel.create(data)
-          res.status(201).send({ status: true, msg: createdBook })
-    }
-    catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
-    }
-}
- 
-module.exports={createBook,createUser}
-=======
 const userLogin = async function (req, res) {
   try {
     let userDetails = req.body;
@@ -128,4 +111,3 @@ const userLogin = async function (req, res) {
 };
 
 module.exports = { userLogin, createUser };
->>>>>>> 52e4662f0cdcc261b742d825bf902c5018abc937
