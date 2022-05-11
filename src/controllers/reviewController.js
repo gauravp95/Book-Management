@@ -134,11 +134,15 @@ const updatereview = async function (req, res) {
   } catch (error) {
     res.status(500).send({ status: false, error: error.message });
     }
-  }
-//---------------------------------Delete Api----------------------------//
+}
+//---------------------------------Delete Review Api--------------------------------------------------------------//
+
 const deleteReview = async function (req,res) {
   try {
       let {bookId, reviewId} = req.params;
+      console.log(bookId);
+      console.log(reviewId);
+      
       if (!isValidObjectId(bookId)) {
           res.status(400).send({status: false, message: 'BookId is not a valid ObjectId'})
       }
@@ -146,11 +150,11 @@ const deleteReview = async function (req,res) {
           res.status(400).send({status: false, message: 'ReviewId is not a valid ObjectId'})
       }
 
-      let checkReview = await reviewModel.findById({reviewId});
+      let checkReview = await reviewModel.findById({_id:reviewId});
       if(!checkReview) {
           res.status(404).send({status: false, message: 'Review Not Found with this reviewId'})
       };
-      let checkBook = await reviewModel.findById({bookId});
+      let checkBook = await bookModel.findById({_id:bookId});
       if(!checkBook) {
           res.status(404).send({status: false, message: 'Book Not found with this BookId'})
       }
