@@ -1,6 +1,5 @@
 const bookModel = require("../models/bookModel.js");
 const reviewModel = require("../models/reviewModel")
-const jwt = require("jsonwebtoken");
 const  mongoose = require("mongoose");
 const moment = require('moment')
 
@@ -25,7 +24,9 @@ const createBook = async function (req, res) {
     try {
       let requestBody = req.body;
       let { title, excerpt, userId, ISBN, category, subcategory,reviews, isDeleted, deletedAt, releasedAt } = requestBody;
-  
+      if (userId != req.userId) {
+        res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+      }  
       if (!isValidRequestBody(requestBody)) {
         res.status(400).send({ status: false, msg: "Please provide details of the User" });
       }
@@ -77,7 +78,12 @@ const getBooks = async function (req, res){
       if (isValid(req.query.subcategory)){checkObject.subcategory =req.query.subcategory}     
      
       let search = await bookModel.find(checkObject).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 ,subcategory:1}).sort({title:1});
-  
+      if (!search) {
+        res.status(404).send({status: false, message: 'Book Not found'}) 
+      }  
+      if (search.userId != req.userId) {
+        res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+      }  
   
       if (search.length == 0){
          return res.status(404).send({ status: false, message:"No such book exist" }) }
@@ -102,6 +108,10 @@ const getBooksBYId = async function (req, res) {
       const bookDetail = await bookModel.findOne({ _id: bookId, isDeleted: false });
       if(!bookDetail){
         return res.status(404).send({status:false, message:"book not found"})}
+
+      if (bookDetail.userId != req.userId) {
+        res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+      }  
   
       const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
     
@@ -119,6 +129,7 @@ const updateBook = async function (req, res) {
   try {
     let requestBody = req.body;
     
+    
     if (!isValidRequestBody(requestBody)) {
       res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide  details to update' })
       return}
@@ -132,12 +143,10 @@ const updateBook = async function (req, res) {
 
     if(!bookIdCheck){    
       return res.status(404).send({status:false,message:'book not found'}) }
-
-    // if(!(req.validToken._id == bookIdCheck.userId)){
-    //   return res.status(400).send({status:false,message:'unauthorized access'})}
-
-    if (!bookIdCheck) {
-      return res.status(404).send({ status: false, msg: 'not valid book, input correct book id' }) }
+    
+    if (bookIdCheck.userId != req.userId) {
+      res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+    }  
 
     let uniqueCheck = await bookModel.find({$or: [{ title: requestBody.title }, { ISBN: requestBody.ISBN }]} )
     
@@ -173,6 +182,9 @@ const deleteBook = async function (req, res) {
     try {
         let bookId = req.params.bookId
         let findData = await bookModel.findById(bookId)
+        if (findData.userId != req.userId) {
+          res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+        }
   
         if (!findData)
             return res.status(404).send({ status: false, message: "no such book exists" })
@@ -180,7 +192,7 @@ const deleteBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Book is already deleted" })
         let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true});
         if(deletedata) {
-          res.status(200).send({ status: true, msg: "Successfully Deleted" })
+          res.status(200).send({ status: true, msg: "Successfully Deleted", data:deletedata})
         }
     }
     catch (error) {

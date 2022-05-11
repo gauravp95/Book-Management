@@ -84,6 +84,7 @@ const createUser = async function (req, res) {
 };
 
 //-----------------------------------login-----------------------------------//
+
 const userLogin = async function (req, res) {
   try {
     let userDetails = req.body;
@@ -96,8 +97,8 @@ const userLogin = async function (req, res) {
     let token = jwt.sign(
       {
         userId: user._id,
-        iat: Date.now(), // iat (issued at) claim identifies the time at which the JWT was issued.
-        exp: 60 * 60, //exp claim identifies the expiration time in sec on or after which the JWT will be expired.
+        iat: Math.floor(Date.now() / 1000), // iat (issued at) claim identifies the time at which the JWT was issued.
+        exp: Math.floor(Date.now() / 1000) + (60 * 60), //exp claim identifies the expiration time in sec on or after which the JWT will be expired.
       },
       "Project3"
     );
