@@ -1,6 +1,6 @@
 const bookModel = require("../models/bookModel.js");
 const jwt = require("jsonwebtoken");
-const { default: mongoose } = require("mongoose");
+const  mongoose = require("mongoose");
 const moment = require('moment')
 
 //---------------------------------------Validadtor------------------------------------------
@@ -14,9 +14,9 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
   
-const isValidObject = function (object) {
-   return Object.keys(object).length == 3;
-};
+// const isValidObject = function (object) {
+//    return Object.keys(object).length == 3;
+// };
   
 const isValidObjectId = function (objectId) {
    return mongoose.Types.ObjectId.isValid(objectId);
@@ -63,6 +63,7 @@ const createBook = async function (req, res) {
 };
 
 //---------------------------------------------GET API {get books by query parameters}------------------------------------------------------//
+
 const getBooks = async function (req, res){
     try {  
       let checkObject ={ isDeleted:false }
@@ -139,12 +140,12 @@ const updateBook = async function (req, res) {
     //   return res.status(400).send({status:false,message:'unauthorized access'})}
 
     if (!bookIdCheck) {
-      return res.status(404).send({ status: false, msg: 'not valid book input correct book id' }) }
+      return res.status(404).send({ status: false, msg: 'not valid book, input correct book id' }) }
 
     let uniqueCheck = await bookModel.find({$or: [{ title: requestBody.title }, { ISBN: requestBody.ISBN }]} )
     
     if (uniqueCheck.length > 0) {  
-      return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
+      return res.status(400).send({ status: false, msg: 'Either title or isbn number is unique' })}
 
     let updateObject ={}
 
@@ -180,8 +181,10 @@ const deleteBook = async function (req, res) {
             return res.status(404).send({ status: false, message: "no such book exists" })
         if (findData.isDeleted == true)
             return res.status(400).send({ status: false, msg: "Book is already deleted" })
-        let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true, upsert: true })
-        res.status(200).send({ status: true, msg: deletedata })
+        let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true});
+        if(deletedata) {
+          res.status(200).send({ status: true, msg: "Successfully Deleted" })
+        }
     }
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })

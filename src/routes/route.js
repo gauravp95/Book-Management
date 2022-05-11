@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {userLogin,createUser} = require("../controllers/userController")
 const { createBook,getBooks, getBooksBYId, updateBook, deleteBook } = require("../controllers/bookController")
-const {updatereview}=require("../controllers/reviewController")
-// const middleware = require('../middleware/middleware')
+const {createReview,updatereview,deleteReview} = require("../controllers/reviewController")
 
 
 //User routes
@@ -18,6 +17,10 @@ router.put("/books/:bookId",updateBook);
 router.delete("/books/:bookId", deleteBook);
 router.put("/books/:bookId/review/:reviewId",updatereview);
 
+//Review
 
+router.post("/books/:bookId/review", createReview);
+router.delete("/books/:bookId/review/:reviewId", deleteReview);
+router.put("/books/:bookId/review/:reviewId", updatereview)
 
 module.exports = router;
