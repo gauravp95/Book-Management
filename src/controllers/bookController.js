@@ -112,7 +112,6 @@ const getBooksBYId = async function (req, res) {
     }
   }
 
-
 //------------------------------------------------PUT API {update books details}------------------------------------------------------------------//
 
 const updateBook = async function (req, res) {
@@ -133,8 +132,8 @@ const updateBook = async function (req, res) {
     if(!bookIdCheck){    
       return res.status(404).send({status:false,message:'book not found'}) }
 
-    // if(!(req.validToken._id == bookIdCheck.userId)){
-    //   return res.status(400).send({status:false,message:'unauthorized access'})}
+   if(!(req.user == bookIdCheck.userId)){  //Athorization
+   return res.status(400).send({status:false,message:'unauthorized access'})}
 
     if (!bookIdCheck) {
       return res.status(404).send({ status: false, msg: 'not valid book, input correct book id' }) }
@@ -187,8 +186,5 @@ const deleteBook = async function (req, res) {
         res.status(500).send({ status: false, msg: error.message })
     }
 };
-
-
-
 
 module.exports = { createBook,getBooks, getBooksBYId, updateBook, deleteBook };

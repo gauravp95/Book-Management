@@ -13,7 +13,6 @@ const authentication = async function (req, res, next) {
             res.status(400).send({ status: false, msg: "user not found" })} 
         
         req.user = decodedToken.userId
-
         
         next()
     
