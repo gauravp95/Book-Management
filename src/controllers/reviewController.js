@@ -1,10 +1,21 @@
 const reviewModel = require('../models/reviewModel')
 const bookModel = require('../models/bookModel')
 
+const isValidObjectId = function (objectId) {
+    return mongoose.Types.ObjectId.isValid(objectId);
+ };
+
 
 const deleteReview = async function (req,res) {
     try {
         let {bookId, reviewId} = req.params;
+        if (!isValidObjectId(bookId)) {
+            res.status(400).send({status: false, message: 'BookId is not a valid ObjectId'})
+        }
+        if (!isValidObjectId(bookId)) {
+            res.status(400).send({status: false, message: 'ReviewId is not a valid ObjectId'})
+        }
+
         let checkReview = await reviewModel.findById({reviewId});
         if(!checkReview) {
             res.status(404).send({status: false, message: 'Review Not Found with this reviewId'})
