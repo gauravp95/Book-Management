@@ -140,8 +140,6 @@ const updatereview = async function (req, res) {
 const deleteReview = async function (req,res) {
   try {
       let {bookId, reviewId} = req.params;
-      console.log(bookId);
-      console.log(reviewId);
       
       if (!isValidObjectId(bookId)) {
           res.status(400).send({status: false, message: 'BookId is not a valid ObjectId'})
