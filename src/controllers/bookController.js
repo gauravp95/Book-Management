@@ -1,6 +1,6 @@
 const bookModel = require("../models/bookModel.js");
 const jwt = require("jsonwebtoken");
-const { default: mongoose } = require("mongoose");
+const  mongoose = require("mongoose");
 const moment = require('moment')
 
 //---------------------------------------Validadtor------------------------------------------
@@ -63,6 +63,7 @@ const createBook = async function (req, res) {
 };
 
 //---------------------------------------------GET API {get books by query parameters}------------------------------------------------------//
+
 const getBooks = async function (req, res){
     try {  
       let checkObject ={ isDeleted:false }
@@ -180,8 +181,10 @@ const deleteBook = async function (req, res) {
             return res.status(404).send({ status: false, message: "no such book exists" })
         if (findData.isDeleted == true)
             return res.status(400).send({ status: false, msg: "Book is already deleted" })
-        let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true, upsert: true })
-        res.status(200).send({ status: true, msg: deletedata })
+        let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true});
+        if(deletedata) {
+          res.status(200).send({ status: true, msg: "Successfully Deleted" })
+        }
     }
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })
