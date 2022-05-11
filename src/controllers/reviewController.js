@@ -1,9 +1,3 @@
-const reviewModel = require('../models/reviewModel')
-const bookModel = require('../models/bookModel')
-
-const isValidObjectId = function (objectId) {
-    return mongoose.Types.ObjectId.isValid(objectId);
- };
 
 
 const deleteReview = async function (req,res) {
@@ -27,6 +21,7 @@ const deleteReview = async function (req,res) {
         if(checkBook.isDeleted == false) {
             if(checkReview.isDeleted == false) {
                 let deleteReview = await reviewModel.findOneAndUpdate({_id:reviewId, isDeleted: false},{ isDeleted: true, deletedAt: new Date() }, { new: true });
+
                 if(deleteReview) {
                     await bookModel.findOneAndUpdate({_id:bookId}, {$inc:{reviews:-1}})
                 }
@@ -44,4 +39,3 @@ const deleteReview = async function (req,res) {
 }
 
 
-module.exports = {deleteReview};
