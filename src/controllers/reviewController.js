@@ -67,4 +67,95 @@ const createReview = async function (req, res) {
   }
 }
 
-module.exports = {createReview};
+//---------------------------------------Put Api Update Rewiew----------------------//
+const updatereview = async function (req, res) {
+  try {
+    let requestBody = req.body;
+    
+    if (!isValidRequestBody(requestBody)) {
+      res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide  details to update' })
+      return}
+    let bookId = req.params.bookId;
+
+    if(!isValidObjectId(bookId)) {      
+      res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
+      return}
+
+    let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false })
+
+    if(!bookIdCheck){    
+      return res.status(404).send({status:false,message:'book not found'}) }
+
+    // if(!(req.validToken._id == bookIdCheck.userId)){
+    //   return res.status(400).send({status:false,message:'unauthorized access'})}
+
+    if (!bookIdCheck) {
+      return res.status(404).send({ status: false, msg: 'not valid book input correct book id' }) }
+
+    let uniqueCheck = await reviewModel.find({$or: [{  review: requestBody. review }, {  rating: requestBody. value},{  reviewedBy: requestBody.reviewedBy}]} )
+    
+    if (uniqueCheck.length > 0) {  
+      return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
+
+    let updateObject ={}
+
+    if (isValid(requestBody. review)) {
+      updateObject.title = requestBody. review}
+
+    if (isValid(requestBody.rating)) {
+      updateObject.rating = requestBody.rating}
+      
+   // if (isValid(requestBody.releasedAt)) {
+     // updateObject.releasedAt = requestBody.releasedAt}
+
+    if (isValid(requestBody.reviewedBy)) {
+      updateObject.value = requestBody.reviewedBy}
+    
+    let update = await bookModel.findOneAndUpdate({ _id: bookId },updateObject , { new: true })
+
+    res.status(200).send({ status: true, message: 'sucessfully updated', data: update })
+
+  } catch (error) {
+    res.status(500).send({ status: false, error: error.message });
+    }
+  }
+//---------------------------------Delete Api----------------------------//
+const deleteReview = async function (req,res) {
+  try {
+      let {bookId, reviewId} = req.params;
+      if (!isValidObjectId(bookId)) {
+          res.status(400).send({status: false, message: 'BookId is not a valid ObjectId'})
+      }
+      if (!isValidObjectId(bookId)) {
+          res.status(400).send({status: false, message: 'ReviewId is not a valid ObjectId'})
+      }
+
+      let checkReview = await reviewModel.findById({reviewId});
+      if(!checkReview) {
+          res.status(404).send({status: false, message: 'Review Not Found with this reviewId'})
+      };
+      let checkBook = await reviewModel.findById({bookId});
+      if(!checkBook) {
+          res.status(404).send({status: false, message: 'Book Not found with this BookId'})
+      }
+      if(checkBook.isDeleted == false) {
+          if(checkReview.isDeleted == false) {
+              let deleteReview = await reviewModel.findOneAndUpdate({_id:reviewId, isDeleted: false},{ isDeleted: true, deletedAt: new Date() }, { new: true });
+
+              if(deleteReview) {
+                  await bookModel.findOneAndUpdate({_id:bookId}, {$inc:{reviews:-1}})
+              }
+              res.status(200).send({status: true, message: 'Review Deleted Succesfully', data: deleteReview});
+          } else {
+              res.status(400).send({status: false, message: 'Review Is Already Deleted'})
+          }
+      } else {
+          res.status(400).send({status: false, message: 'Book Is Already Deleted'})
+      }
+  } catch (error) {
+      res.status(500).send({status: false, message: error.message})
+  }
+
+}
+
+module.exports = {createReview ,updatereview , deleteReview};
