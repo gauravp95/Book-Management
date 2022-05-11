@@ -82,6 +82,7 @@ const updatereview = async function (req, res) {
     if(!isValidObjectId(bookId)){ 
       res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
       return}
+      // let reviewId = req.params.reviewId;
 
   if(!isValidObjectId(reviewId)){
     res.status(400).send({status: false, message: `${reviewId} is not a valid review id`})
@@ -121,6 +122,7 @@ const updatereview = async function (req, res) {
 const deleteReview = async function (req,res) {
   try {
       let {bookId, reviewId} = req.params;
+      
       if (!isValidObjectId(bookId)) {
           res.status(400).send({status: false, message: 'BookId is not a valid ObjectId'})
       }
@@ -128,11 +130,11 @@ const deleteReview = async function (req,res) {
           res.status(400).send({status: false, message: 'ReviewId is not a valid ObjectId'})
       }
 
-      let checkReview = await reviewModel.findById({reviewId});
+      let checkReview = await reviewModel.findById({_id:reviewId});
       if(!checkReview) {
           res.status(404).send({status: false, message: 'Review Not Found with this reviewId'})
       };
-      let checkBook = await reviewModel.findById({bookId});
+      let checkBook = await bookModel.findById({_id:bookId});
       if(!checkBook) {
           res.status(404).send({status: false, message: 'Book Not found with this BookId'})
       }

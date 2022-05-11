@@ -15,6 +15,7 @@ router.get("/books", getBooks);
 router.get("/books/:bookId", getBooksBYId);
 router.put("/books/:bookId",updateBook);
 router.delete("/books/:bookId", deleteBook);
+router.put("/books/:bookId/review/:reviewId",updatereview);
 
 //Review
 
