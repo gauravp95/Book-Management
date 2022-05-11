@@ -14,9 +14,9 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
   
-const isValidObject = function (object) {
-   return Object.keys(object).length == 3;
-};
+// const isValidObject = function (object) {
+//    return Object.keys(object).length == 3;
+// };
   
 const isValidObjectId = function (objectId) {
    return mongoose.Types.ObjectId.isValid(objectId);
@@ -139,12 +139,12 @@ const updateBook = async function (req, res) {
     //   return res.status(400).send({status:false,message:'unauthorized access'})}
 
     if (!bookIdCheck) {
-      return res.status(404).send({ status: false, msg: 'not valid book input correct book id' }) }
+      return res.status(404).send({ status: false, msg: 'not valid book, input correct book id' }) }
 
     let uniqueCheck = await bookModel.find({$or: [{ title: requestBody.title }, { ISBN: requestBody.ISBN }]} )
     
     if (uniqueCheck.length > 0) {  
-      return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
+      return res.status(400).send({ status: false, msg: 'Either title or isbn number is unique' })}
 
     let updateObject ={}
 

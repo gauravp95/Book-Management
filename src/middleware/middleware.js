@@ -12,9 +12,10 @@ const authentication = async function (req, res, next) {
         if (!decodedToken) {          
             res.status(400).send({ status: false, msg: "user not found" })} 
         
-        req.validToken = decodedToken
+        req.user = decodedToken.userId
+
         
-        next() 
+        next()
     
     } catch (error) {
         
