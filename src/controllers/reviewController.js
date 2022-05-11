@@ -100,20 +100,26 @@ const updatereview = async function (req, res) {
     if (!reviewIdCheck) {
       return res.status(404).send({ status: false, msg: 'not valid book input correct book id' }) }
 
-    let uniqueCheck = await reviewModel.find({$or: [{  rating: requestBody.rating }, { review: requestBody. review},{  reviewedBy: requestBody.reviewedBy},{  reviewId: requestBody.reviewId}]} )
-    
-   // if (uniqueCheck.length > 0) {  
-     // return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
+    let uniqueCheck = await reviewModel.find({$or: [{  reviewedBy: requestBody.reviewedBy},{  rating: requestBody.rating }, { review: requestBody. review},{  reviewId: requestBody.reviewId}]} )
+   // let uniqueCheck=await bookModel.find({$or:[review : requestBody.review, ]})
+    //if (uniqueCheck.length > 0) {  
+      //return res.status(400).send({ status: false, msg: 'Either title or isbn number is not unique' })}
 
     let updateObject ={}
+   // if (isValid(requestBody.review)) {
+     // updateObject.review = requestBody.review}
+   
+
+    if (isValid(requestBody.reviewedBy)) {
+      updateObject.reviewedBy = requestBody.reviewedBy}
+   
     if (isValid(requestBody. rating)) {
       updateObject.rating = requestBody. rating}
 
     if (isValid(requestBody. review)) {
       updateObject.review = requestBody. review}
 
-    if (isValid(requestBody.reviewedBy)) {
-      updateObject.reviewedBy = requestBody.reviewedBy}
+   
       
    // if (isValid(requestBody.releasedAt)) {
      // updateObject.releasedAt = requestBody.releasedAt}
@@ -121,7 +127,7 @@ const updatereview = async function (req, res) {
     if (isValid(requestBody.reviewId)) {
       updateObject.reviewId = requestBody.reviewId}
     
-    let update = await bookModel.findOneAndUpdate({ _id: bookId },updateObject , { new: true })
+    let update = await reviewModel.findOneAndUpdate({ _id: reviewId },updateObject , { new: true })
 
     res.status(200).send({ status: true, message: 'sucessfully updated', data: update })
 
