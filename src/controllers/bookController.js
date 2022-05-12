@@ -24,6 +24,10 @@ const createBook = async function (req, res) {
     try {
       let requestBody = req.body;
       let { title, excerpt, userId, ISBN, category, subcategory,reviews, isDeleted, deletedAt, releasedAt } = requestBody;
+      
+      if (!isValidObjectId(userId)) {
+        return res.status(400).send({status: false, message: 'Userid is not a valid ObjectId'})
+      }
       if (userId != req.userId) {
         res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
       }  
@@ -67,12 +71,14 @@ const getBooks = async function (req, res){
       let checkObject ={ isDeleted:false }
   
       if (isValid(req.query.userId)){checkObject.userId =req.query.userId}
-  
+      
       if(req.query.userId){
       if(!isValidObjectId(req.query.userId)){     
         res.status(400).send({status: false, message: `${req.query.userId}It is not a valid user id`})
         return}}
-  
+      if (req.query.userId != req.userId) {
+          res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+      }  
       if (isValid(req.query.category)){checkObject.category =req.query.category}
   
       if (isValid(req.query.subcategory)){checkObject.subcategory =req.query.subcategory}     
@@ -81,10 +87,7 @@ const getBooks = async function (req, res){
       if (!search) {
         res.status(404).send({status: false, message: 'Book Not found'}) 
       }  
-      if (search.userId != req.userId) {
-        res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
-      }  
-  
+     
       if (search.length == 0){
          return res.status(404).send({ status: false, message:"No such book exist" }) }
        
