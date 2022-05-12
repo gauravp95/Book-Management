@@ -24,6 +24,10 @@ const createBook = async function (req, res) {
     try {
       let requestBody = req.body;
       let { title, excerpt, userId, ISBN, category, subcategory,reviews, isDeleted, deletedAt, releasedAt } = requestBody;
+      
+      if (!isValidObjectId(userId)) {
+        return res.status(400).send({status: false, message: 'Userid is not a valid ObjectId'})
+      }
       if (userId != req.userId) {
         res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
       }  
