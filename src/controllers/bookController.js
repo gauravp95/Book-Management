@@ -1,7 +1,6 @@
 const bookModel = require("../models/bookModel.js");
 const reviewModel = require("../models/reviewModel")
 const  mongoose = require("mongoose");
-const moment = require('moment')
 
 //---------------------------------------Validadtor------------------------------------------
 const isValid = function (value) {
@@ -23,7 +22,7 @@ const isValidObjectId = function (objectId) {
 const createBook = async function (req, res) {
     try {
       let requestBody = req.body;
-      let { title, excerpt, userId, ISBN, category, subcategory,reviews, isDeleted, deletedAt, releasedAt } = requestBody;
+      let { title, excerpt, userId, ISBN, category, subcategory,reviews, releasedAt } = requestBody;
       
       if (!isValidObjectId(userId)) {
         return res.status(400).send({status: false, message: 'Userid is not a valid ObjectId'})
@@ -49,14 +48,11 @@ const createBook = async function (req, res) {
       if (!isValid(subcategory)) {
         res.status(400).send({ status: false, msg: "Enter appropriate password" });
       }
-      if (ISBN.length != 10) {
+      if (ISBN.length != 13) {
         res.status(400).send({ status: false, msg: "Enter 10 digit ISBN no. of Book" });
       }
-      if (isDeleted === true) {
-        deletedAt = Date.now()
-      }
-      releasedAt = moment().format("YYYY-MM-DD")
-      const bookData = {  title, excerpt, userId, ISBN, category, subcategory,reviews, isDeleted, deletedAt, releasedAt };
+     
+      const bookData = {  title, excerpt, userId, ISBN, category, subcategory,reviews, releasedAt };
       const newBook = await bookModel.create(bookData);
       return res.status(201).send({ status: true, message: 'Success', data: newBook });
     } catch (error) {
@@ -83,7 +79,7 @@ const getBooks = async function (req, res){
   
       if (isValid(req.query.subcategory)){checkObject.subcategory =req.query.subcategory}     
      
-      let search = await bookModel.find(checkObject).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 ,subcategory:1}).sort({title:1});
+      let search = await bookModel.find(checkObject).select({ISBN:0,subcategory:0,isDeleted:0,createdAt:0,updatedAt:0,__v:0}).sort({title:1});
       if (!search) {
         res.status(404).send({status: false, message: 'Book Not found'}) 
       }  
@@ -117,7 +113,7 @@ const getBooksBYId = async function (req, res) {
       }  
   
       const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
-    
+      
       res.status(200).send({ status: true, data: {...bookDetail.toObject(),reviewsData}});
   
     } catch (error){  
