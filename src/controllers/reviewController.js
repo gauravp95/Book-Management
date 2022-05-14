@@ -6,7 +6,7 @@ const mongoose = require("mongoose")
 const isValid = function (value) {
   if (typeof value === 'undefined' || value === null) return false
   if (typeof value === 'string' && value.trim().length === 0) return false
-  if (typeof value === 'number') return false
+  // if (typeof value === 'number') return false
   return true;}
 
 const isValidRequestBody = function (requestBody) {
@@ -45,13 +45,13 @@ const createReview = async function (req, res) {
       res.status(400).send({ status: false, message: ' Rate 1 to 5 Only' })
       return}
 
-     //let bookDetail = await bookModel.findOneAndUpdate({ _id: req.params.bookId }, { reviews: checkBookId.reviews + 1 }, { new: true })
+     await bookModel.findOneAndUpdate({ _id: req.params.bookId }, { reviews: checkBookId.reviews + 1 }, { new: true })
 
     requestBody.reviewedAt = new Date()
     requestBody.bookId = req.params.bookId
     requestBody.reviewedBy = requestBody.reviewedBy?requestBody.reviewedBy:'Guest';
 
-    let create = await reviewModel.create(requestBody);
+    let create = await reviewModel.create(requestBody);//.toObject
     
     const data = {
      _id:create._id , 
@@ -145,7 +145,7 @@ const deleteReview = async function (req,res) {
               if(deleteReview) {
                   await bookModel.findOneAndUpdate({_id:bookId}, {$inc:{reviews:-1}})
               }
-              return res.status(200).send({status: true, message: 'Review Deleted Succesfully', data: deleteReview});
+              return res.status(200).send({status: true, message: 'Review Deleted Succesfully'});//, data: deleteReview
           } else {
               res.status(400).send({status: false, message: 'Review Is Already Deleted'})
           }

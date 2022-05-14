@@ -11,7 +11,7 @@ const authentication = async function (req, res, next) {
         const decoded = jwt.decode(token, 'Project3');
 
         if (!decoded) {
-            return res.status(400).send({ status: false, message: "Invalid authentication token in request headers." });
+            return res.status(401).send({ status: false, message: "Invalid authentication token in request headers." });
         }
         if (Date.now() > (decoded.exp) * 1000) {
             return res.status(403).send({ status: false, message: "Session expired! Please login again." });
@@ -19,7 +19,7 @@ const authentication = async function (req, res, next) {
         const verify = jwt.verify(token, 'Project3')
 
         if (!verify) {
-            return res.status(403).send({ status: false, message: `Invalid authentication token in request` });
+            return res.status(401).send({ status: false, message: `Invalid authentication token in request` });//-------------------
         }
         req.userId = decoded.userId;
         next()

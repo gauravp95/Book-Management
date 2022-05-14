@@ -49,7 +49,7 @@ const createBook = async function (req, res) {
       if (!isValid(subcategory)) {
         res.status(400).send({ status: false, msg: "Enter appropriate password" });
       }
-      if (ISBN.length != 10) {
+      if (ISBN.length != 13) {
         res.status(400).send({ status: false, msg: "Enter 10 digit ISBN no. of Book" });
       }
       if (isDeleted === true) {
@@ -194,7 +194,7 @@ const deleteBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Book is already deleted" })
         let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true});
         if(deletedata) {
-          res.status(200).send({ status: true, msg: "Successfully Deleted", data:deletedata})
+          res.status(200).send({ status: true, msg: "Successfully Deleted"})//, data:deletedata
         }
     }
     catch (error) {
