@@ -45,7 +45,7 @@ const createReview = async function (req, res) {
       return res.status(400).send({ status: false, message: ' Rate 1 to 5 Only' })
       }
 
-    await bookModel.findOneAndUpdate({ _id: req.params.bookId }, { reviews: checkBookId.reviews + 1 }, { new: true })
+    await bookModel.findOneAndUpdate({ _id: req.params.bookId }, {$inc:{reviews:1}}, { new: true })
 
     requestBody.reviewedAt = new Date()
     requestBody.bookId = req.params.bookId
