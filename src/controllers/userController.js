@@ -16,9 +16,7 @@ const isValidObject = function (object) {
   return Object.keys(object).length == 3;
 };
 
-const isValidObjectId = function (objectId) {
-  return mongoose.Types.ObjectId.isValid(objectId);
-};
+
 
 //-----------------------------------Post Api {Create User}r----------------------------------------------------//
 

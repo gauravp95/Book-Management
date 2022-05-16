@@ -8,8 +8,9 @@ const authentication = async function (req, res, next) {
             return res.status(403).send({ status: false, message: `Missing authentication token in request` });
         }
 
-        const decoded = jwt.decode(token, 'Project3');
-
+        const decoded = jwt.decode(token );
+        console.log(decoded);
+        
         if (!decoded) {
             return res.status(400).send({ status: false, message: "Invalid authentication token in request headers." });
         }
@@ -17,7 +18,8 @@ const authentication = async function (req, res, next) {
             return res.status(403).send({ status: false, message: "Session expired! Please login again." });
         }
         const verify = jwt.verify(token, 'Project3')
-
+        console.log(verify);
+        
         if (!verify) {
             return res.status(403).send({ status: false, message: `Invalid authentication token in request` });
         }

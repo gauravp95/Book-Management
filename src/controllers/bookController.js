@@ -132,7 +132,7 @@ const getBooksBYId = async function (req, res) {
       if(!bookDetail){
         return res.status(404).send({status:false, message:"book not found"})}
    
-      const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
+      const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });    
       
       return res.status(200).send({ status: true, data: {...bookDetail.toObject(),reviewsData}});
   
@@ -147,6 +147,7 @@ const getBooksBYId = async function (req, res) {
 const updateBook = async function (req, res) {
   try {
     let requestBody = req.body;
+    let {title, excerpt, releasedAt, ISBN } = requestBody
     
     
     if (!isValidRequestBody(requestBody)) {
@@ -165,26 +166,33 @@ const updateBook = async function (req, res) {
     
     if (bookIdCheck.userId != req.userId) {
       return res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
-    }  
+    } 
+    if (!isValidISBN(ISBN)){
+      return res.status(400).send({ status: false, message: 'Please Enter a Valid ISBN' });
+    }
+   
+    if (!releaseFormat(releasedAt)) {
+      return res.status(400).send({ status: false, message: "Invalid Released Date " });
+    } 
 
-    let uniqueCheck = await bookModel.find({$or: [{ title: requestBody.title }, { ISBN: requestBody.ISBN }]} )
+    let uniqueCheck = await bookModel.find({$or: [{ title: title }, { ISBN: ISBN }]} )
     
     if (uniqueCheck.length > 0) {  
       return res.status(400).send({ status: false, msg: 'Either title or isbn number is unique' })}
 
     let updateObject ={}
 
-    if (isValid(requestBody.title)) {
-      updateObject.title = requestBody.title}
+    if (isValid(title)) {
+      updateObject.title = title}
 
-    if (isValid(requestBody.excerpt)) {
-      updateObject.excerpt = requestBody.excerpt}
+    if (isValid(excerpt)) {
+      updateObject.excerpt = excerpt}
       
-    if (isValid(requestBody.releasedAt)) {
-      updateObject.releasedAt = requestBody.releasedAt}
+    if (isValid(releasedAt)) {
+      updateObject.releasedAt = releasedAt}
 
-    if (isValid(requestBody.ISBN)) {
-      updateObject.ISBN = requestBody.ISBN}
+    if (isValid(ISBN)) {
+      updateObject.ISBN = ISBN}
     
     let update = await bookModel.findOneAndUpdate({ _id: bookId },updateObject , { new: true })
 
