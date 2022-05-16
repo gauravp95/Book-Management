@@ -26,7 +26,7 @@ const authentication = async function (req, res, next) {
     
     } catch (error) {
         
-        res.status(400).send({ status: false, message: error })}    
+        return res.status(400).send({ status: false, message: error })}    
 }
 
 module.exports = {authentication}

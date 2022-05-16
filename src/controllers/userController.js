@@ -28,51 +28,51 @@ const createUser = async function (req, res) {
     const { title, name, phone, email, password, address } = requestBody;  ///User Id And Book id
 
     if (!isValidRequestBody(requestBody)) {
-      res.status(400).send({ status: false, msg: "Please provide details of the User" });
+      return res.status(400).send({ status: false, msg: "Please provide details of the User" });
     }
     if (!isValid(title)) {
-      res.status(400).send({status: false, msg: 'Enter appropriate title ex. "Mr", "Mrs","Miss"'});
+      return res.status(400).send({status: false, msg: 'Enter appropriate title ex. "Mr", "Mrs","Miss"'});
     }
     if (!isValid(name)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate name of user  " });
+      return res.status(400).send({ status: false, msg: "Enter appropriate name of user  " });
     }
     if (!isValid(phone)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate phone no." });
+      return res.status(400).send({ status: false, msg: "Enter appropriate phone no." });
     }
     if (!isValid(email)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate email" });
+      return res.status(400).send({ status: false, msg: "Enter appropriate email" });
     }
     if (!isValid(password)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate password" });
+      return res.status(400).send({ status: false, msg: "Enter appropriate password" });
     }
     if (!isValidObject(address)) {
-      res.status(400).send({status: false, msg: "Enter appropriate address with street,city,pincode"});
+      return res.status(400).send({status: false, msg: "Enter appropriate address with street,city,pincode"});
     }
     if (!isValid(address.street)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate street" });
+      return res.status(400).send({ status: false, msg: "Enter appropriate street" });
     }
     if (!isValid(address.city)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate city" });
+      return res.status(400).send({ status: false, msg: "Enter appropriate city" });
     }
     if (!isValid(address.pincode)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate pincode" });
+      return res.status(400).send({ status: false, msg: "Enter appropriate pincode" });
     }
 
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-      res.status(400).send({ status: false, msg: "Please enter valid email Id" });
+      return res.status(400).send({ status: false, msg: "Please enter valid email Id" });
     }
 
     if (!(phone.length == 10)) {
-      res.status(400).send({ status: false, msg: "Enter 10 digit mobile no." });
+      return res.status(400).send({ status: false, msg: "Enter 10 digit mobile no." });
     }
 
     if (!isValid(password)) {
-      res.status(400).send({ status: false, msg: "Enter appropriate password" });
+      return res.status(400).send({ status: false, msg: "Enter appropriate password" });
     }
 
     const isEmailAlreadyUsed = await userModel.findOne({ email });
     if (isEmailAlreadyUsed) {
-      res.status(400).send({ status: false, msg: "Email Address already registered" });
+      return res.status(400).send({ status: false, msg: "Email Address already registered" });
     }
 
     const userData = { title, name, phone, email, password, address };
@@ -88,11 +88,9 @@ const createUser = async function (req, res) {
 const userLogin = async function (req, res) {
   try {
     let userDetails = req.body;
-    let user = await userModel.findOne(userDetails);
+    let user = await userModel.findOne({email:userDetails.email, password:userDetails.password});
     if (!user) {
-      return res
-        .status(404)
-        .send({ status: false, msg: "Invalid email or Password" });
+      return res.status(404).send({ status: false, msg: "Invalid email or Password" });
     }
     let token = jwt.sign(
       {
@@ -103,10 +101,9 @@ const userLogin = async function (req, res) {
       "Project3"
     );
 
-    res.status(200).send({ status: true, msg: token });
+    return res.status(200).send({ status: true, msg: token });
   } catch (error) {
-    res.status(500).send({ status: false, msg: error.message });
-    console.log(error.message);
+    return res.status(500).send({ status: false, msg: error.message });
   }
 };
 

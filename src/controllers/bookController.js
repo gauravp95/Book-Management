@@ -28,28 +28,28 @@ const createBook = async function (req, res) {
         return res.status(400).send({status: false, message: 'Userid is not a valid ObjectId'})
       }
       if (userId != req.userId) {
-        res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+        return res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
       }  
       if (!isValidRequestBody(requestBody)) {
-        res.status(400).send({ status: false, msg: "Please provide details of the User" });
+        return res.status(400).send({ status: false, msg: "Please provide details of the User" });
       }
       if (!isValid(title)) {
-        res.status(400).send({status: false, msg: 'Enter appropriate title of the Book'});
+        return res.status(400).send({status: false, msg: 'Enter appropriate title of the Book'});
       }
       if (!isValid(excerpt)) {
-        res.status(400).send({ status: false, msg: "Enter appropriate Body of the book " });
+        return res.status(400).send({ status: false, msg: "Enter appropriate Body of the book " });
       }
       if (!isValid(ISBN)) {
-        res.status(400).send({ status: false, msg: "Enter appropriate ISBN." });
+        return res.status(400).send({ status: false, msg: "Enter appropriate ISBN." });
       }
       if (!isValid(category)) {
-        res.status(400).send({ status: false, msg: "Enter appropriate category" });
+        return res.status(400).send({ status: false, msg: "Enter appropriate category" });
       }
       if (!isValid(subcategory)) {
-        res.status(400).send({ status: false, msg: "Enter appropriate password" });
+        return res.status(400).send({ status: false, msg: "Enter appropriate password" });
       }
       if (ISBN.length != 13) {
-        res.status(400).send({ status: false, msg: "Enter 10 digit ISBN no. of Book" });
+        return res.status(400).send({ status: false, msg: "Enter 10 digit ISBN no. of Book" });
       }
      
       const bookData = {  title, excerpt, userId, ISBN, category, subcategory,reviews, releasedAt };
@@ -70,10 +70,10 @@ const getBooks = async function (req, res){
       
       if(req.query.userId){
       if(!isValidObjectId(req.query.userId)){     
-        res.status(400).send({status: false, message: `${req.query.userId}It is not a valid user id`})
-        return}}
+        return res.status(400).send({status: false, message: `${req.query.userId}It is not a valid user id`})
+        }}
       if (req.query.userId != req.userId) {
-          res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+          return res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
       }  
       if (isValid(req.query.category)){checkObject.category =req.query.category}
   
@@ -81,16 +81,16 @@ const getBooks = async function (req, res){
      
       let search = await bookModel.find(checkObject).select({ISBN:0,subcategory:0,isDeleted:0,createdAt:0,updatedAt:0,__v:0}).sort({title:1});
       if (!search) {
-        res.status(404).send({status: false, message: 'Book Not found'}) 
+        return res.status(404).send({status: false, message: 'Book Not found'}) 
       }  
      
       if (search.length == 0){
          return res.status(404).send({ status: false, message:"No such book exist" }) }
        
-      res.status(200).send({ status: true, message:"Book list", data:search})   
+      return res.status(200).send({ status: true, message:"Book list", data:search})   
     
     } catch (error) {  
-      res.status(500).send({ status: false, error: error.message });
+      return res.status(500).send({ status: false, error: error.message });
     }
 }
 
@@ -101,23 +101,23 @@ const getBooksBYId = async function (req, res) {
       let bookId = req.params.bookId;
   
       if(!isValidObjectId(bookId)){       
-        res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
-        return}
+        return res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
+        }
   
       const bookDetail = await bookModel.findOne({ _id: bookId, isDeleted: false });
       if(!bookDetail){
         return res.status(404).send({status:false, message:"book not found"})}
 
       if (bookDetail.userId != req.userId) {
-        res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+        return res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
       }  
   
       const reviewsData = await reviewModel.find({ bookId: bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, rating:1, review: 1, releasedAt: 1 });;      
       
-      res.status(200).send({ status: true, data: {...bookDetail.toObject(),reviewsData}});
+      return res.status(200).send({ status: true, data: {...bookDetail.toObject(),reviewsData}});
   
     } catch (error){  
-      res.status(500).send({ status: false, error: error.message });      
+      return res.status(500).send({ status: false, error: error.message });      
     }
   }
 
@@ -130,13 +130,13 @@ const updateBook = async function (req, res) {
     
     
     if (!isValidRequestBody(requestBody)) {
-      res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide  details to update' })
-      return}
+      return res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide  details to update' })
+      }
     let bookId = req.params.bookId;
 
     if(!isValidObjectId(bookId)) {      
-      res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
-      return}
+      return res.status(400).send({status: false, message: `${bookId} is not a valid book id`})
+      }
 
     let bookIdCheck = await bookModel.findOne({ _id: bookId, isDeleted: false })
 
@@ -144,7 +144,7 @@ const updateBook = async function (req, res) {
       return res.status(404).send({status:false,message:'book not found'}) }
     
     if (bookIdCheck.userId != req.userId) {
-      res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+      return res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
     }  
 
     let uniqueCheck = await bookModel.find({$or: [{ title: requestBody.title }, { ISBN: requestBody.ISBN }]} )
@@ -168,10 +168,10 @@ const updateBook = async function (req, res) {
     
     let update = await bookModel.findOneAndUpdate({ _id: bookId },updateObject , { new: true })
 
-    res.status(200).send({ status: true, message: 'sucessfully updated', data: update })
+    return res.status(200).send({ status: true, message: 'sucessfully updated', data: update })
 
   } catch (error) {
-    res.status(500).send({ status: false, error: error.message });
+    return res.status(500).send({ status: false, error: error.message });
   }
 }
 
@@ -182,7 +182,7 @@ const deleteBook = async function (req, res) {
         let bookId = req.params.bookId
         let findData = await bookModel.findById(bookId)
         if (findData.userId != req.userId) {
-          res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
+          return res.status(403).send({status: false, message: 'Unauthorised Access'})  //.....Authorisation
         }
   
         if (!findData)
@@ -191,11 +191,11 @@ const deleteBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Book is already deleted" })
         let deletedata = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } }, { new: true});
         if(deletedata) {
-          res.status(200).send({ status: true, msg: "Successfully Deleted", data:deletedata})
+          return res.status(200).send({ status: true, msg: "Successfully Deleted"})
         }
     }
     catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
+        return res.status(500).send({ status: false, msg: error.message })
     }
 };
 
