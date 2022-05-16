@@ -88,9 +88,16 @@ const createUser = async function (req, res) {
 const userLogin = async function (req, res) {
   try {
     let userDetails = req.body;
-    let user = await userModel.findOne({email:userDetails.email, password:userDetails.password});
+    let {email, password} = userDetails
+    if(!email) {
+      return res.status(400).send({status: false, message: 'Email is required'})
+    }
+    if(!password) {
+      return res.status(400).send({status:false, message:'Password is required'})
+    }
+    let user = await userModel.findOne({email:email, password:password});
     if (!user) {
-      return res.status(404).send({ status: false, msg: "Invalid email or Password" });
+      return res.status(400).send({ status: false, msg: "Registration is required" });
     }
     let token = jwt.sign(
       {
@@ -101,7 +108,7 @@ const userLogin = async function (req, res) {
       "Project3"
     );
 
-    return res.status(200).send({ status: true, msg: token });
+    return res.status(201).send({ status: true, msg: token });
   } catch (error) {
     return res.status(500).send({ status: false, msg: error.message });
   }

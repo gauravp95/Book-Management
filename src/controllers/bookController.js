@@ -1,5 +1,6 @@
 const bookModel = require("../models/bookModel.js");
 const reviewModel = require("../models/reviewModel")
+const userModel = require("../models/userModel")
 const  mongoose = require("mongoose");
 
 //---------------------------------------Validadtor------------------------------------------
@@ -72,10 +73,7 @@ const createBook = async function (req, res) {
       if (!isValidISBN(ISBN)){
         return res.status(400).send({ status: false, message: 'Please Enter a Valid ISBN' });
       }
-      if(!Array.isArray(subcategory)){
-        return res.status(400).send({ status: false, data: "Subcategory is must be an Array" })
-  
-      }
+     
       if (!releaseFormat(releasedAt)) {
         return res.status(400).send({ status: false, message: "Invalid Released Date " });
       }

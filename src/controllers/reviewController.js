@@ -74,6 +74,7 @@ const updatereview = async function (req, res) {
     let bookId = req.params.bookId
     let reviewId = req.params.reviewId
     let requestBody = req.body
+    let {review, reviewedBy, rating} = requestBody
 
     if (!isValidRequestBody(requestBody)){
       return res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide review details' })
@@ -97,18 +98,18 @@ const updatereview = async function (req, res) {
 
     let updateData = {}
 
-    if (isValid(requestBody.review)){
-      updateData.review = requestBody.review}
+    if (isValid(review)){
+      updateData.review = review}
 
-    if (isValid(requestBody.reviewedBy)){
-      updateData.reviewedBy = requestBody.reviewedBy}
+    if (isValid(reviewedBy)){
+      updateData.reviewedBy = reviewedBy}
     
-    if (requestBody.rating && typeof requestBody.rating === 'number' && requestBody.rating >= 1 && requestBody.rating <= 5) {
-      updateData.rating = requestBody.rating}
-    
-    if(!(requestBody.rating >= 1 && requestBody.rating <= 5)){
-      return res.status(400).send({status:false, message: "rating should be in range 1 to 5 "})}
-    
+    if (rating && typeof rating === 'number' && rating >= 1 && rating <= 5) {
+      updateData.rating = rating}
+    if(rating) {
+      if(!(rating >= 1 && rating <= 5)){
+        return res.status(400).send({status:false, message: "rating should be in range 1 to 5 "})}
+    }
     const update = await reviewModel.findOneAndUpdate({ _id: reviewId }, updateData, { new: true })
     return res.status(200).send({ status: true, message: 'review updated sucessfully', data: update })
 
