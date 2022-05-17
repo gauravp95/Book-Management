@@ -17,7 +17,7 @@ const authentication = async function (req, res, next) {
             return res.status(403).send({ status: false, message: "Session expired! Please login again." });
         }
      
-        req.userId = decoded.userId;
+        req.userId = decodedToken.userId;
         next()
     
     } catch (error) {
