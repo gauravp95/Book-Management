@@ -8,7 +8,9 @@ const bookSchema = new mongoose.Schema({
 
   excerpt:{type: String, required: true, trim: true},
 
-  userId:{type: ObjectId, required: true, ref:'User',},
+  userId:{type: ObjectId, required: true, ref:'User'},
+  
+  bookCover: {type: String},
 
   ISBN:{type: String, required: true, unique: true, trim: true},
 
