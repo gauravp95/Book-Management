@@ -19,7 +19,9 @@ router.delete("/books/:bookId",authentication, deleteBook);
 //Review
 
 router.post("/books/:bookId/review", createReview);
+router.put("/books/:bookId/review/:reviewId",updatereview);
 router.delete("/books/:bookId/review/:reviewId", deleteReview);
-router.put("/books/:bookId/review/:reviewId", updatereview)
 
 module.exports = router;
+
+//middleware.authentication,

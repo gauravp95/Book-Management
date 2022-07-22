@@ -6,7 +6,7 @@ const mongoose = require("mongoose")
 const isValid = function (value) {
   if (typeof value === 'undefined' || value === null) return false
   if (typeof value === 'string' && value.trim().length === 0) return false
-  if (typeof value === 'number') return false
+  // if (typeof value === 'number') return false
   return true;}
 
 const isValidRequestBody = function (requestBody) {
@@ -51,7 +51,7 @@ const createReview = async function (req, res) {
     requestBody.bookId = req.params.bookId
     requestBody.reviewedBy = requestBody.reviewedBy?requestBody.reviewedBy:'Guest';
 
-    let create = await reviewModel.create(requestBody);
+    let create = await reviewModel.create(requestBody);//.toObject
     
     const data = {
      _id:create._id , 

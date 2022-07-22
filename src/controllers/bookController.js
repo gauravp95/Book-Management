@@ -181,7 +181,6 @@ const getBooksBYId = async function (req, res) {
     }
   }
 
-
 //------------------------------------------------PUT API {update books details}------------------------------------------------------------------//
 
 const updateBook = async function (req, res) {
@@ -266,8 +265,5 @@ const deleteBook = async function (req, res) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 };
-
-
-
 
 module.exports = { createBook,getBooks, getBooksBYId, updateBook, deleteBook };
